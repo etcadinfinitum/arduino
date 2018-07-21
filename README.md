@@ -1,5 +1,20 @@
 # Arduino Experiments by a ~~N00b~~ _Computer Science Student_
 
+### Setup
+
+Assuming the Arduino IDE is downloaded and running on your machine, test a simple sketch.
+
+Most common error message on first execution:
+`Error opening serial port <portname>: Permission denied`
+Solution:
+* First, type into terminal: `ls -l /dev/ttyACM*`
+* The output will show what serial ports are available on the machine. We want to enable serial port permissions for the resulting ports.
+* In terminal, type: `sudo usermod -a -G dialout <username>` where <username> is your username in the system.
+* Lastly, we want the serial port enabled for execution in Linux. Type: `sudo chmod a+rw /dev/ttyACM0`
+* In the final instruction, your port name `ttyACM<digit>` is the port name with final digit as displayed in the first `ls` step. 
+If stuck, read this: http://arduino-er.blogspot.com/2014/08/arduino-ide-error-avrdude-seropen-cant.html or this: https://www.arduino.cc/en/Guide/Linux#toc2
+
+
 ### Documentation
 
 My objective is to provide detailed hardware lists and circuit diagrams for 
