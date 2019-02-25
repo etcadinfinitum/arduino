@@ -125,12 +125,27 @@ void starryNight() {
     
     // initialize array of white and yellow stars
     // inner array: int idx, int duration, int elapsedTime, int r, int b, int g, int reverse
-    uint8_t color_data[5][7];
+    uint8_t twinkle[5][7];
     for (int i = 0; i < 5; i++) {
-        bool added = true;
-        for (int j = 0; j < i; j++) {
-            if (
+        bool added = false;
+        uint8_t newIdx = 0;
+        while (!added) {
+            added = true;
+            newIdx = random(1000) % the_strip.numPixels();
+            for (int j = 0; j < i; j++) {
+                if (newIdx == twinkle[i][0]) {
+                    added = false;
+                }
+            }
         }
+        // if previous while block passes, then a unique index has been selected. now choose a color range
+        // trying to be clever and pick a color at random (instead of defining a color array)
+        // may switch to defining an array depending on color output
+        uint8_t R = random(225, 256);
+        uint8_t B = random(225, 256);
+        uint8_t G = random(225, 256);
+        uint8_t duration = random(25, 100);
+        twinkle[i] = {newIdx, duration, 0, R, B, G, 0};
     }
     
     // cycle color changes
@@ -138,17 +153,61 @@ void starryNight() {
         // determine color of each item (based on modulo?)
         for (int pix = 0; pix < the_strip.numPixels(); pix++) {
             // if pix is in the "twinkle" list, then process that first
-            // TODO
             bool isStar = false;
+            uint8_t starIdx = 0;
             for (int i = 0; i < 5; i++) {
-                if (color_data[i][0] == pix) {
+                if (twinkle[i][0] == pix) {
                     isStar = true;
+                    starIdx = i;
                     break;
                 }
             }
-            // if the current pixel is 
+            // if the current pixel is a star, handle color cycling separately
             if (isStar) {
-                
+                // `twinkle`'s inner array: int idx, int duration, int elapsedTime, int r, int b, int g, int reverse
+                // change color brightness
+                // case 1: star is getting brighter (first half of duration cycle with reverse == 0)
+                if (twinkle[starIdx][6] == 0 && twinkle[starIdx][2] < twinkle[starIdx][1] / 2) {
+                    // set RBG values to be proportionate to the brightness rate of the cycle
+                    uint8_t R = (twinkle[starIdx][3] / (twinkle[starIdx][2] / 2)) * twinkle[starIdx][2];
+                    uint8_t B = (twinkle[starIdx][4] / (twinkle[starIdx][2] / 2)) * twinkle[starIdx][2];
+                    uint8_t G = (twinkle[starIdx][5] / (twinkle[starIdx][2] / 2)) * twinkle[starIdx][2];
+                    the_strip.setPixelColor(pix, R, B, G);
+                } else if (twinkle[starIdx][6] == 1 && twinkle[starIdx][2] > twinkle[starIdx][1] / 2) {
+                    // set RBG values to be proportionate to the brightness rate of the cycle
+                    uint8_t R = twinkle[starIdx][3] - ((twinkle[starIdx][2] - (twinkle[starIdx][1] / 2)) * (twinkle[starIdx][3] * 2 / twinkle[starIdx][1]));
+                    uint8_t B = twinkle[starIdx][4] - ((twinkle[starIdx][2] - (twinkle[starIdx][1] / 2)) * (twinkle[starIdx][4] * 2 / twinkle[starIdx][1]));
+                    uint8_t G = twinkle[starIdx][4] - ((twinkle[starIdx][2] - (twinkle[starIdx][1] / 2)) * (twinkle[starIdx][5] * 2 / twinkle[starIdx][1]));
+                    the_strip.setPixelColor(pix, R, B, G);
+                } else {
+                    the_strip.setPixelColor(pix, twinkle[starIdx][3], twinkle[starIdx][4], twinkle[starIdx][5]);
+                }
+                // increment elapsedTime value
+                twinkle[starIdx][2] = twinkle[starIdx][2] + 1;
+                // if the brightness counter has maxed out, set the reverse value to 1 instead of 0 so light will dim
+                if (twinkle[starIdx][6] == 0 && twinkle[starIdx][2] == twinkle[starIdx][1]) {
+                    twinkle[starIdx][6] = 1;
+                    twinkle[starIdx][2] = 0;
+                }
+                // if the current star is at the end of its cycle, then select a new light to twinkle
+                if (twinkle[starIdx][6] == 1 && twinkle[starIdx][2] == twinkle[starIdx][1]) {
+                    bool added = false;
+                    uint8_t newIdx = 0;
+                    while (!added) {
+                        added = true;
+                        newIdx = random(1000) % the_strip.numPixels();
+                        for (int j = 0; j < 5; j++) {
+                            if (newIdx == twinkle[j][0]) {
+                                added = false;
+                            }
+                        }
+                        uint8_t R = random(225, 256);
+                        uint8_t B = random(225, 256);
+                        uint8_t G = random(225, 256);
+                        uint8_t duration = random(25, 100);
+                        twinkle[starIdx] = {newIdx, duration, 0, R, B, G, 0};
+                    }
+                }
             }
             // if millisecond delay cycle is up, then we want to change colors
             else if (i % color_data[pix][1] == 0) {
@@ -188,7 +247,3 @@ void starryNight() {
         delay(1);
     }
 }
-
-
-
-
