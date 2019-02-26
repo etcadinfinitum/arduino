@@ -141,11 +141,13 @@ void starryNight() {
         // if previous while block passes, then a unique index has been selected. now choose a color range
         // trying to be clever and pick a color at random (instead of defining a color array)
         // may switch to defining an array depending on color output
-        uint8_t R = random(225, 256);
-        uint8_t B = random(225, 256);
-        uint8_t G = random(225, 256);
-        uint8_t duration = random(25, 100);
-        twinkle[i] = {newIdx, duration, 0, R, B, G, 0};
+        twinkle[i][3] = random(225, 256);
+        twinkle[i][4] = random(225, 256);
+        twinkle[i][5] = random(225, 256);
+        twinkle[i][1] = random(25, 100);
+        twinkle[i][0] = newIdx;
+        twinkle[i][2] = 0;
+        twinkle[i][6] = 0;
     }
     
     // cycle color changes
@@ -201,11 +203,13 @@ void starryNight() {
                                 added = false;
                             }
                         }
-                        uint8_t R = random(225, 256);
-                        uint8_t B = random(225, 256);
-                        uint8_t G = random(225, 256);
-                        uint8_t duration = random(25, 100);
-                        twinkle[starIdx] = {newIdx, duration, 0, R, B, G, 0};
+                        twinkle[starIdx][3] = random(225, 256);
+                        twinkle[starIdx][4] = random(225, 256);
+                        twinkle[starIdx][5] = random(225, 256);
+                        twinkle[starIdx][1] = random(25, 100);
+                        twinkle[starIdx][0] = newIdx;
+                        twinkle[starIdx][2] = 0;
+                        twinkle[starIdx][6] = 0;
                     }
                 }
             }
