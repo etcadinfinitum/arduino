@@ -46,3 +46,66 @@ Breadboarding is fine for prototyping, but not exactly stable for
 day-to-day usage, and I've never printed a PCB or soldered components
 for any electronics project before, so I may look into that down the
 line.
+
+## Technical Notes
+
+I have the memory of a goldfish, so as follows are my notes for how
+to actually do all this stuff.
+
+### Host Machine Software Prerequisites
+
+This should be one-and-done stuff.
+
+I'm not worried about having the Arduino IDE because I'm an
+insufferable sOfTwArE eNgiNeEr aNd i UsE ViM
+
+...but I still need at least a few libraries in the Arduino STL, as
+well as the CLI tool. Installation instructions are
+[in the docs](https://arduino.github.io/arduino-cli/0.29/installation/)
+for the Arduino CLI tool; I'm on Linux so `curl`ing the installation
+script is the way to go. For completion and consistency:
+
+```shell
+$ sudo apt-get install arduino
+$ sudo usermod -a -G tty $USER
+$ sudo usermod -a -G dialout $USER
+$ curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sudo BINDIR=/usr/local/bin sh
+```
+
+Installed libs:
+
+```shell
+$ arduino-cli core update-index
+$ arduino-cli core install arduino:avr
+$ arduino-cli lib install ArduinoSTL
+$ arduino-cli lib install "Adafruit NeoPixel"
+$ arduino-cli core list
+```
+
+### Interacting With the Board
+
+With the pre-requisites done, the board should be discoverable and
+attachable, if it isn't already automatically detected and attached.
+It's an Elegoo knockoff board but mimics an Arduino Uno.
+
+```shell
+$ sudo dmsg | grep -C 8 Arduino
+[Will show discoverable port number]
+$ arduino-cli board attach -p /dev/ttyACM0
+$ arduino-cli board list
+Port         Protocol Type              Board Name  FQBN            Core       
+/dev/ttyACM0 serial   Serial Port (USB) Arduino Uno arduino:avr:uno arduino:avr
+```
+
+### Compiling and Uploading
+
+1. Make sure the Arduino device is plugged into the computer.
+2. Wire the ground and 5V lines on the LED strip to power & ground
+   sources and ensure the strip's data pin is wired into the pin
+   specified in the sketch.
+
+```shell
+# I have found that trying to specify the sketch file produces errors.
+$ arduino-cli compile --fqbn arduino:avr:uno
+$ arduino-cli arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:uno lighting
+```
