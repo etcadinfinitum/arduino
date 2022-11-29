@@ -7,6 +7,7 @@
 
 PixelDispatcher::PixelDispatcher() {
     rainbow_hue = 0;
+    marquee_start = 0;
     start = millis();
     strip = Adafruit_NeoPixel(0, 0, NEO_GRB + NEO_KHZ800);
 }
@@ -51,6 +52,10 @@ void PixelDispatcher::runMode(int mode, unsigned long wait, int brightness) {
             // Rainbow
             rainbow(brightness);
             break;
+        case 2 :
+            // Marquee
+            marquee();
+            break;
         default :
             // Should be unreachable, but just in case, turn off all
             // pixels.
@@ -74,4 +79,35 @@ void PixelDispatcher::rainbow(int brightness) {
     strip.rainbow(rainbow_hue, reps, 255, brightness);
     strip.show();
     rainbow_hue = (rainbow_hue + 256) % 65536;
+}
+
+/**
+ * Display a single frame of marquee stripes along the strip.
+ *
+ * When cycled by the dispatcher, the routine should look something
+ * like the following:
+ * ***    ***    ***    ***    ***
+ *  ***    ***    ***    ***    **
+ *   ***    ***    ***    ***    *
+ *    ***    ***    ***    ***    
+ *     ***    ***    ***    ***   
+ * *    ***    ***    ***    ***  
+ * **    ***    ***    ***    *** 
+ * ***    ***    ***    ***    ***
+ * ...etc
+ */
+void PixelDispatcher::marquee() {
+    int len = 7;    // Use consistent spacing
+    int m_2 = (marquee_start + 1) % len;
+    int m_3 = (marquee_start + 2) % len;
+    for (int i = 0; i < strip.numPixels(); i++) {
+        int collapsed = i % len;
+        if (collapsed == marquee_start || collapsed == m_2 || collapsed == m_3) {
+            strip.setPixelColor(i, 255, 255, 0);
+        } else {
+            strip.setPixelColor(i, 0, 0, 0);
+        }
+    }
+    strip.show();
+    marquee_start = m_2;
 }

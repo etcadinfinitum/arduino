@@ -4,7 +4,7 @@
 #define DATAPIN 5
 #define BOUNCEPIN 2
 #define REELSIZE 300
-#define MODES 2
+#define MODES 3
 
 PixelDispatcher dispatcher;
 

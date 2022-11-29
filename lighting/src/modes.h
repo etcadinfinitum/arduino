@@ -15,4 +15,8 @@ class PixelDispatcher {
         // Rainbow Mode stuff.
         unsigned long rainbow_hue;
         void rainbow(int brightness);
+
+        // Marquee Mode stuff.
+        int marquee_start;
+        void marquee();
 };
