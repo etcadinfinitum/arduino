@@ -25,7 +25,7 @@ void PixelDispatcher::initialize(int reelsize, int datapin) {
  * This method updates an internal long for how long of an interval has
  * passed, and checks against how long the current wait time should be.
  */
-bool PixelDispatcher::continueWaiting(int wait) {
+bool PixelDispatcher::continueWaiting(unsigned long wait) {
     unsigned long now = millis();
     if (now - start < wait) {
         return true;
@@ -34,7 +34,7 @@ bool PixelDispatcher::continueWaiting(int wait) {
     return false;
 }
 
-void PixelDispatcher::runMode(int mode, int wait, int brightness) {
+void PixelDispatcher::runMode(int mode, unsigned long wait, int brightness) {
     // Should we even try to cycle?
     if (continueWaiting(wait)) {
         return;
@@ -66,8 +66,6 @@ void PixelDispatcher::runMode(int mode, int wait, int brightness) {
  * continuous.
  */
 void PixelDispatcher::rainbow(int brightness) {
-    Serial.print("Selected hue to display is: ");
-    Serial.println(rainbow_hue);
     // Used to determine how many complete rainbow cycles to display
     // along strand of known size.
     int reps = 3;
@@ -75,5 +73,5 @@ void PixelDispatcher::rainbow(int brightness) {
     // function and I'm just now learning about this?
     strip.rainbow(rainbow_hue, reps, 255, brightness);
     strip.show();
-    rainbow_hue = rainbow_hue + 256;
+    rainbow_hue = (rainbow_hue + 256) % 65536;
 }
