@@ -79,6 +79,7 @@ $ arduino-cli core update-index
 $ arduino-cli core install arduino:avr
 $ arduino-cli lib install ArduinoSTL
 $ arduino-cli lib install "Adafruit NeoPixel"
+$ arduino-cli lib install FTDebouncer
 $ arduino-cli core list
 ```
 
