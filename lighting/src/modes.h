@@ -12,6 +12,7 @@ class PixelDispatcher {
         unsigned long start;
         bool continueWaiting(int wait);
 
-        int rainbow_hue;
-        void rainbow(int speed, int brightness);
+        // Rainbow Mode stuff.
+        unsigned long rainbow_hue;
+        void rainbow(int brightness);
 };

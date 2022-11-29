@@ -44,12 +44,19 @@ void PixelDispatcher::runMode(int mode, int wait, int brightness) {
     switch (mode) {
         case 0 :
             // Turn off pixels
+            strip.clear();
             strip.show();
+            break;
         case 1 :
             // Rainbow
-            rainbow(wait, brightness);
+            rainbow(brightness);
+            break;
         default :
+            // Should be unreachable, but just in case, turn off all
+            // pixels.
+            strip.clear();
             strip.show();
+            break;
     }
 }
 
@@ -58,7 +65,9 @@ void PixelDispatcher::runMode(int mode, int wait, int brightness) {
  * rainbow hue gradient once. When repeated, the effect should be
  * continuous.
  */
-void PixelDispatcher::rainbow(int speed, int brightness) {
+void PixelDispatcher::rainbow(int brightness) {
+    Serial.print("Selected hue to display is: ");
+    Serial.println(rainbow_hue);
     // Used to determine how many complete rainbow cycles to display
     // along strand of known size.
     int reps = 3;
@@ -66,6 +75,5 @@ void PixelDispatcher::rainbow(int speed, int brightness) {
     // function and I'm just now learning about this?
     strip.rainbow(rainbow_hue, reps, 255, brightness);
     strip.show();
-    delay(speed);
-    rainbow_hue = 65536 * reps / strip.numPixels();
+    rainbow_hue = rainbow_hue + 256;
 }
