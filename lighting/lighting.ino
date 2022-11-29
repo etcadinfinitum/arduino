@@ -1,33 +1,34 @@
 #include <ArduinoSTL.h>
-#include <FTDebouncer.h>
 #include "src/modes.h"
 
-#define DATAPIN 2
-#define BOUNCEPIN 12
+#define DATAPIN 5
+#define BOUNCEPIN 2
 #define REELSIZE 300
 #define MODES 2
 
 PixelDispatcher dispatcher;
-FTDebouncer debouncer;
 
 uint32_t MODE = 0;
 uint32_t WAIT = 50;
 uint32_t BRIGHTNESS = 160;
+unsigned long LAST_PRESS;
+
+const uint32_t DEBOUNCE_INTERVAL = 100; // ms
 
 void setup() {
     // put your setup code here, to run once:
     dispatcher.initialize(REELSIZE, DATAPIN);
 
-    debouncer.addPin(BOUNCEPIN, LOW);
-    debouncer.begin();
-
     Serial.begin(9600);
+
+    // Set up button pin and debouncer routines
+    LAST_PRESS = millis();
+    pinMode(BOUNCEPIN, INPUT);
+    attachInterrupt(digitalPinToInterrupt(BOUNCEPIN), interrupt, RISING);
 }
 
 void loop() {
     // put your main code here, to run repeatedly:
-
-    debouncer.update();
 
     // Retrieve sensor inputs as necessary.
     WAIT = getWait();
@@ -37,27 +38,14 @@ void loop() {
     dispatcher.runMode(MODE, WAIT, BRIGHTNESS);
 }
 
-void onPinActivated(int pin) {
-    // Read button presses from digital pins to get mode selection.
-    // This function is also responsible for managing value modulos
-    // to ensure a valid mode is set.
-    if (pin == BOUNCEPIN) {
-        MODE = (MODE + 1) % MODES;
-        Serial.print("In onPinActivated(). Pin number: ");
-        Serial.println(pin);
-        Serial.print("Toggled to mode: ");
-        Serial.println(MODE);
+void interrupt() {
+    unsigned long now = millis();
+    if (now - LAST_PRESS < DEBOUNCE_INTERVAL) {
+        // Do nothing. Do not reset timing or toggle modes.
+        return;
     }
-}
-
-void onPinDeactivated(int pin) {
-    if (pin == BOUNCEPIN) {
-        Serial.print("In onPinDeactivated(). Pin number: ");
-        Serial.println(pin);
-        Serial.print("Toggled to mode: ");
-        Serial.println(MODE);
-    }
-    // Do nothing.
+    MODE = (MODE + 1) % MODES;
+    LAST_PRESS = now;
 }
 
 uint32_t getWait() {
