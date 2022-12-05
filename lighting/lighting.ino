@@ -10,8 +10,9 @@ PixelDispatcher dispatcher;
 
 unsigned long WAIT = 10;
 
-uint32_t MODE = 0;
-uint32_t BRIGHTNESS = 160;
+uint8_t MODE = 0;
+uint8_t BRIGHTNESS = 160;
+
 unsigned long LAST_PRESS;
 
 const uint32_t DEBOUNCE_INTERVAL = 100; // ms
@@ -53,10 +54,10 @@ unsigned long getWait() {
     // Read potentiometer value from digital pins and convert to a
     // usable time value to specify the display interval in milliseconds.
     // Until this is implemented, return 50.
-    return 10;
+    return 100;
 }
 
-uint32_t getBrightness() {
+uint8_t getBrightness() {
     // Read potentiometer value from digital pins and convert to a
     // usable brightness level to feed to the neopixel strip. The
     // brightness level must be specified between 0 and 255 inclusive.

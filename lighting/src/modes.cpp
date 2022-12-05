@@ -35,11 +35,12 @@ bool PixelDispatcher::continueWaiting(unsigned long wait) {
     return false;
 }
 
-void PixelDispatcher::runMode(int mode, unsigned long wait, int brightness) {
+void PixelDispatcher::runMode(uint8_t mode, unsigned long wait, uint8_t brightness) {
     // Should we even try to cycle?
     if (continueWaiting(wait)) {
         return;
     }
+    strip.setBrightness(brightness);
     // Did mode change? If so, we might need to reset some values.
     // Re-dispatch to correct method as needed.
     switch (mode) {
@@ -50,7 +51,7 @@ void PixelDispatcher::runMode(int mode, unsigned long wait, int brightness) {
             break;
         case 1 :
             // Rainbow
-            rainbow(brightness);
+            rainbow();
             break;
         case 2 :
             // Marquee
@@ -70,15 +71,15 @@ void PixelDispatcher::runMode(int mode, unsigned long wait, int brightness) {
  * rainbow hue gradient once. When repeated, the effect should be
  * continuous.
  */
-void PixelDispatcher::rainbow(int brightness) {
+void PixelDispatcher::rainbow() {
     // Used to determine how many complete rainbow cycles to display
     // along strand of known size.
     int reps = 3;
     // The Adafruit Neopixel library has a wicked awesome rainbow()
     // function and I'm just now learning about this?
-    strip.rainbow(rainbow_hue, reps, 255, brightness);
+    strip.rainbow(rainbow_hue, reps);
     strip.show();
-    rainbow_hue = (rainbow_hue + 256) % 65536;
+    rainbow_hue = (rainbow_hue + 512) % 65536;
 }
 
 /**

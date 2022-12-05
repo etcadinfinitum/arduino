@@ -4,7 +4,7 @@ class PixelDispatcher {
     public:
         PixelDispatcher();
         void initialize(int reelsize, int datapin);
-        void runMode(int mode, unsigned long wait, int brightness);
+        void runMode(uint8_t mode, unsigned long wait, uint8_t brightness);
     private:
         Adafruit_NeoPixel strip;
 
@@ -14,7 +14,7 @@ class PixelDispatcher {
 
         // Rainbow Mode stuff.
         unsigned long rainbow_hue;
-        void rainbow(int brightness);
+        void rainbow();
 
         // Marquee Mode stuff.
         int marquee_start;
