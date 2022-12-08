@@ -18,6 +18,7 @@ void PixelDispatcher::initialize(int reelsize, int datapin) {
     strip.begin();
     // call to "show" turns all pixels off initially
     strip.show();
+    starryNightObj = new StarryNight(reelsize);
 }
 
 /**
@@ -56,6 +57,10 @@ void PixelDispatcher::runMode(uint8_t mode, unsigned long wait, uint8_t brightne
         case 2 :
             // Marquee
             marquee();
+            break;
+        case 3 :
+            // Starry Night
+            starryNight();
             break;
         default :
             // Should be unreachable, but just in case, turn off all
@@ -111,4 +116,12 @@ void PixelDispatcher::marquee() {
     }
     strip.show();
     marquee_start = m_2;
+}
+
+void PixelDispatcher::starryNight() {
+    starryNightObj->update();
+    for (uint8_t i = 0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, starryNightObj->getR(i), starryNightObj->getG(i), starryNightObj->getB(i));
+    }
+    strip.show();
 }

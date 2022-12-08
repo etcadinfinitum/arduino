@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include "starrynight.h"
 
 class PixelDispatcher {
     public:
@@ -19,4 +20,8 @@ class PixelDispatcher {
         // Marquee Mode stuff.
         int marquee_start;
         void marquee();
+
+        // Night Sky stuff.
+        StarryNight* starryNightObj;
+        void starryNight();
 };
